@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Neon Drifters: Corse Clandestine</title>
+    
+    <!-- Favicon (Immagine del sito) - Macchinina Neon in SVG -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%23030308' rx='6'/><path d='M 5 22 L 8 14 L 24 14 L 27 22 Z' fill='%23111' stroke='%2300ffff' stroke-width='1.5'/><path d='M 10 14 L 12 7 L 20 7 L 22 14 Z' fill='%23222' stroke='%23ff00ff' stroke-width='1.5'/><rect x='6' y='18' width='5' height='2' fill='%23fff'/><rect x='21' y='18' width='5' height='2' fill='%23fff'/></svg>">
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700;900&display=swap');
 
@@ -188,7 +192,6 @@
         .lb-arg { color: #C0C0C0; text-shadow: 0 0 10px #C0C0C0; font-size: 1.4rem;}
         .lb-bro { color: #CD7F32; text-shadow: 0 0 10px #CD7F32; font-size: 1.3rem;}
         .lb-blu { color: #00ffff; }
-        .lb-player { background: rgba(0, 255, 255, 0.15) !important; border: 1px solid var(--text-color); }
 
         .win-glow { background: radial-gradient(circle, rgba(57,255,20,0.15) 0%, rgba(0,0,0,0.9) 80%) !important; border-color: var(--accent-lime) !important; box-shadow: 0 0 40px rgba(57,255,20,0.2) !important;}
         .lose-glow { background: radial-gradient(circle, rgba(255,0,0,0.15) 0%, rgba(0,0,0,0.9) 80%) !important; border-color: #ff0000 !important; box-shadow: 0 0 40px rgba(255,0,0,0.2) !important;}
@@ -967,8 +970,7 @@ function generateLeaderboardHTML() {
     compStandings.forEach((st, index) => {
         let pos = index + 1;
         let cClass = pos === 1 ? 'lb-oro' : pos === 2 ? 'lb-arg' : pos === 3 ? 'lb-bro' : 'lb-blu';
-        let rowClass = st.id === 'player' ? 'lb-player' : '';
-        html += `<tr class="${rowClass}">
+        html += `<tr>
             <td class="${cClass}">${pos}°</td>
             <td style="color:${st.color}; text-shadow:0 0 5px ${st.color}">${st.name}</td>
             <td class="${cClass}">${st.score}</td>
