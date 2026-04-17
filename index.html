@@ -9,7 +9,7 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%23030308' rx='6'/><path d='M 5 22 L 8 14 L 24 14 L 27 22 Z' fill='%23111' stroke='%2300ffff' stroke-width='1.5'/><path d='M 10 14 L 12 7 L 20 7 L 22 14 Z' fill='%23222' stroke='%23ff00ff' stroke-width='1.5'/><rect x='6' y='18' width='5' height='2' fill='%23fff'/><rect x='21' y='18' width='5' height='2' fill='%23fff'/></svg>">
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitran:wght@400;700;900&family=Rajdhani:wght@500;700;900&display=swap');
 
         :root {
             --bg-color: #030308;
@@ -180,7 +180,15 @@
         #comp-info { position: absolute; top: 70px; left: 20px; color: #ffd700; font-size: 1.5rem; font-weight: bold; text-shadow: 0 0 10px #ffd700; font-family: 'Orbitron'; display:none;}
 
         /* --- SCHERMATA CLASSIFICA / FINE GARA --- */
-        #end-screen .panel { padding: 40px; text-align: center; border-width: 3px; max-height: 90vh; overflow-y: auto;}
+        #end-screen .panel { 
+            padding: 40px; text-align: center; border-width: 3px; max-height: 90vh; overflow-y: auto;
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+        }
+        #end-screen .panel::-webkit-scrollbar { 
+            display: none; /* Chrome, Safari and Opera */
+        }
+        
         #end-title { font-size: 4rem; line-height: 1; margin-bottom: 10px; font-family: 'Orbitron'; }
         
         .leaderboard-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 1.3rem; font-weight: bold;}
@@ -438,7 +446,8 @@ const CAR_DATABASE = [
     { id: 6, name: "Bullet", color: "#ffff00", maxSpeed: 35, accel: 0.45, handling: 7, maxHp: 180 },
     { id: 7, name: "Viper", color: "#8a2be2", maxSpeed: 31, accel: 0.32, handling: 9, maxHp: 255 },
     { id: 8, name: "Oasis", color: "#00fa9a", maxSpeed: 24, accel: 0.22, handling: 11, maxHp: 360 },
-    { id: 9, name: "Nightmare", color: "#880000", maxSpeed: 34, accel: 0.4, handling: 8, maxHp: 240 }
+    { id: 9, name: "Nightmare", color: "#880000", maxSpeed: 34, accel: 0.4, handling: 8, maxHp: 240 },
+    { id: 10, name: "R+G", color: "#00bfff", maxSpeed: 50, accel: 0.9, handling: 18, maxHp: 9999 }
 ];
 
 const OBSTACLES = ['barrier'];
@@ -574,6 +583,26 @@ class Car extends Entity {
         ctx.fillStyle = "rgba(0, 255, 255, 0.3)"; ctx.beginPath();
         if(ctx.roundRect) ctx.roundRect(-this.w/2 + 7, -this.h/5 - 8, this.w - 14, 15, 3); else ctx.fillRect(-this.w/2 + 7, -this.h/5 - 8, this.w - 14, 15);
         ctx.fill();
+
+        // --- DETTAGLIO CUORE AZZURRO PER "R+G" ---
+        if (this.stats.name === "R+G") {
+            ctx.save();
+            ctx.shadowBlur = 15; ctx.shadowColor = "#00bfff"; ctx.fillStyle = "#00bfff";
+            ctx.beginPath();
+            ctx.translate(0, 5); // Sposta al centro del tetto
+            ctx.moveTo(0, -2);
+            ctx.bezierCurveTo(0, -12, -15, -12, -15, -2);
+            ctx.bezierCurveTo(-15, 10, 0, 15, 0, 22);
+            ctx.bezierCurveTo(0, 15, 15, 10, 15, -2);
+            ctx.bezierCurveTo(15, -12, 0, -12, 0, -2);
+            ctx.fill();
+            
+            // Scritta all'interno del cuore
+            ctx.shadowBlur = 0; ctx.fillStyle = "#000000";
+            ctx.font = "900 10px Orbitron"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+            ctx.fillText("R+G", 0, 4);
+            ctx.restore();
+        }
 
         ctx.fillStyle = (this.speed < this.maxSpeed - 5 || this.isBrokenDown) ? "#ff0000" : "#ff00ff";
         ctx.shadowColor = ctx.fillStyle; ctx.shadowBlur = 15;
@@ -1102,7 +1131,10 @@ function initUI() {
         let card = document.createElement('div'); card.className = `car-card ${index === selectedCarId ? 'selected' : ''}`;
         card.onclick = () => { document.querySelectorAll('.car-card').forEach(c => c.classList.remove('selected')); card.classList.add('selected'); selectedCarId = car.id; };
         
-        let spdPct = (car.maxSpeed / 35) * 100; let accPct = (car.accel / 0.45) * 100; let hpPct = (car.maxHp / 750) * 100;
+        // Uso Math.min per evitare che la barra della R+G esca dal box (visto che sfora le statistiche massime)
+        let spdPct = Math.min(100, (car.maxSpeed / 35) * 100); 
+        let accPct = Math.min(100, (car.accel / 0.45) * 100); 
+        let hpPct = Math.min(100, (car.maxHp / 750) * 100);
         card.innerHTML = `
             <div style="font-weight:900; font-family:'Orbitron'; font-size:1.1rem; color:${car.color}; text-shadow:0 0 10px ${car.color}">${car.name}</div>
             <div class="car-preview-css" style="background: linear-gradient(180deg, #333, #111); border-color:${car.color}; box-shadow: 0 0 20px ${car.color} inset;">
